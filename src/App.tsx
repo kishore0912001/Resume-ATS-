@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import { 
   Upload, 
   FileText, 
+  File,
+  Image as ImageIcon,
   CheckCircle2, 
   AlertCircle, 
   ArrowRight, 
@@ -17,6 +19,20 @@ import { motion, AnimatePresence } from 'motion/react';
 import { extractTextFromPDF } from './lib/pdf';
 import { analyzeResume, type AnalysisResult } from './services/gemini';
 import { cn } from './lib/utils';
+
+const Logo = ({ className = "" }: { className?: string }) => (
+  <div className={cn("relative flex items-center justify-center", className)}>
+    <div className="absolute inset-0 bg-brand blur-xl opacity-40 rounded-full animate-pulse" />
+    <div className="relative w-10 h-10 bg-brand rounded-xl flex items-center justify-center text-slate-900 shadow-[0_0_20px_rgba(0,229,255,0.6)]">
+      <div className="relative">
+        <FileText size={22} strokeWidth={2.5} />
+        <div className="absolute inset-0 flex items-center justify-center pt-1">
+          <ImageIcon size={12} strokeWidth={3} className="text-brand-dark" />
+        </div>
+      </div>
+    </div>
+  </div>
+);
 
 export default function App() {
   const [file, setFile] = useState<File | null>(null);
@@ -111,19 +127,17 @@ ${result.actionable_improvements.map(i => `- ${i}`).join('\n')}
   };
 
   return (
-    <div className="min-h-screen bg-[#f5f5f5] text-slate-900 font-sans selection:bg-indigo-100">
+    <div className="min-h-screen bg-[#f8fafc] text-slate-900 font-sans selection:bg-brand/20">
       {/* Header */}
       <header className="bg-white border-b border-slate-200 sticky top-0 z-10">
         <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center text-white">
-              <Zap size={18} fill="currentColor" />
-            </div>
-            <span className="font-bold text-lg tracking-tight">ResumeAI</span>
+          <div className="flex items-center gap-3">
+            <Logo />
+            <span className="font-bold text-xl tracking-tight text-slate-900">Smart<span className="text-brand">ATS</span></span>
           </div>
           <nav className="hidden sm:flex items-center gap-6 text-sm font-medium text-slate-600">
-            <a href="#" className="hover:text-indigo-600 transition-colors">How it works</a>
-            <a href="#" className="hover:text-indigo-600 transition-colors">Pricing</a>
+            <a href="#" className="hover:text-brand transition-colors">How it works</a>
+            <a href="#" className="hover:text-brand transition-colors">Pricing</a>
             <a href="#" className="bg-slate-900 text-white px-4 py-2 rounded-full hover:bg-slate-800 transition-colors">Get Started</a>
           </nav>
         </div>
@@ -137,7 +151,7 @@ ${result.actionable_improvements.map(i => `- ${i}`).join('\n')}
             animate={{ opacity: 1, y: 0 }}
             className="text-4xl sm:text-5xl font-extrabold text-slate-900 mb-4 tracking-tight"
           >
-            AI Resume & <span className="text-indigo-600">ATS Analyzer</span>
+            Smart<span className="text-brand">ATS</span> Analyzer
           </motion.h1>
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
@@ -155,7 +169,7 @@ ${result.actionable_improvements.map(i => `- ${i}`).join('\n')}
           <div className="lg:col-span-5 space-y-6">
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
               <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <FileText size={20} className="text-indigo-600" />
+                <FileText size={20} className="text-brand" />
                 Upload Resume
               </h2>
               
@@ -166,8 +180,8 @@ ${result.actionable_improvements.map(i => `- ${i}`).join('\n')}
                 className={cn(
                   "border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all",
                   file 
-                    ? "border-indigo-200 bg-indigo-50/30" 
-                    : "border-slate-200 hover:border-indigo-400 hover:bg-slate-50"
+                    ? "border-brand/30 bg-brand/5" 
+                    : "border-slate-200 hover:border-brand/50 hover:bg-slate-50"
                 )}
               >
                 <input 
@@ -179,7 +193,7 @@ ${result.actionable_improvements.map(i => `- ${i}`).join('\n')}
                 />
                 {file ? (
                   <div className="flex flex-col items-center">
-                    <div className="w-12 h-12 bg-indigo-100 text-indigo-600 rounded-full flex items-center justify-center mb-3">
+                    <div className="w-12 h-12 bg-brand/10 text-brand rounded-full flex items-center justify-center mb-3">
                       <FileText size={24} />
                     </div>
                     <p className="font-medium text-slate-900 mb-1 truncate max-w-full px-4">
@@ -207,14 +221,14 @@ ${result.actionable_improvements.map(i => `- ${i}`).join('\n')}
 
             <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
               <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                <Target size={20} className="text-indigo-600" />
+                <Target size={20} className="text-brand" />
                 Job Description <span className="text-xs font-normal text-slate-400">(Optional)</span>
               </h2>
               <textarea 
                 value={jobDescription}
                 onChange={(e) => setJobDescription(e.target.value)}
                 placeholder="Paste the job description here to get a more accurate ATS score..."
-                className="w-full h-40 p-4 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-none text-sm"
+                className="w-full h-40 p-4 rounded-xl border border-slate-200 focus:ring-2 focus:ring-brand focus:border-transparent transition-all resize-none text-sm"
               />
             </div>
 
@@ -222,10 +236,10 @@ ${result.actionable_improvements.map(i => `- ${i}`).join('\n')}
               onClick={handleAnalyze}
               disabled={!file || isAnalyzing}
               className={cn(
-                "w-full py-4 rounded-xl font-bold text-white shadow-lg flex items-center justify-center gap-2 transition-all",
+                "w-full py-4 rounded-xl font-bold text-slate-900 shadow-lg flex items-center justify-center gap-2 transition-all",
                 !file || isAnalyzing 
                   ? "bg-slate-300 cursor-not-allowed" 
-                  : "bg-indigo-600 hover:bg-indigo-700 hover:-translate-y-0.5 active:translate-y-0"
+                  : "bg-brand hover:bg-brand-dark hover:-translate-y-0.5 active:translate-y-0 shadow-[0_0_15px_rgba(0,229,255,0.3)]"
               )}
             >
               {isAnalyzing ? (
@@ -306,7 +320,7 @@ ${result.actionable_improvements.map(i => `- ${i}`).join('\n')}
                     </div>
                     <button 
                       onClick={exportReport}
-                      className="mt-8 flex items-center gap-2 text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors"
+                      className="mt-8 flex items-center gap-2 text-sm font-semibold text-brand-dark hover:text-brand transition-colors"
                     >
                       <Download size={18} />
                       Export Full Report
@@ -355,13 +369,13 @@ ${result.actionable_improvements.map(i => `- ${i}`).join('\n')}
                     {/* Improvements */}
                     <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 md:col-span-2">
                       <h3 className="font-bold text-slate-900 mb-4 flex items-center gap-2">
-                        <Lightbulb size={18} className="text-indigo-500" />
+                        <Lightbulb size={18} className="text-brand" />
                         How to Improve
                       </h3>
                       <ul className="space-y-4">
                         {result.actionable_improvements.map((improvement, i) => (
-                          <li key={i} className="flex items-start gap-4 p-3 rounded-xl bg-indigo-50/50 border border-indigo-100/50 text-sm text-slate-700">
-                            <span className="w-6 h-6 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-xs shrink-0">
+                          <li key={i} className="flex items-start gap-4 p-3 rounded-xl bg-brand/5 border border-brand/10 text-sm text-slate-700">
+                            <span className="w-6 h-6 rounded-full bg-brand/20 text-brand-dark flex items-center justify-center font-bold text-xs shrink-0">
                               {i + 1}
                             </span>
                             {improvement}
@@ -395,14 +409,12 @@ ${result.actionable_improvements.map(i => `- ${i}`).join('\n')}
       {/* Footer */}
       <footer className="bg-white border-t border-slate-200 py-12 mt-12">
         <div className="max-w-5xl mx-auto px-4 text-center">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <div className="w-6 h-6 bg-indigo-600 rounded flex items-center justify-center text-white">
-              <Zap size={14} fill="currentColor" />
-            </div>
-            <span className="font-bold text-slate-900">ResumeAI</span>
+          <div className="flex flex-col items-center justify-center gap-4 mb-4">
+            <Logo className="scale-125" />
+            <span className="font-bold text-slate-900 text-lg tracking-tight">Smart<span className="text-brand">ATS</span></span>
           </div>
           <p className="text-sm text-slate-500">
-            &copy; {new Date().getFullYear()} ResumeAI. Powered by Gemini AI.
+            &copy; {new Date().getFullYear()} SmartATS. Powered by Gemini AI.
           </p>
         </div>
       </footer>

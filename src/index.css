@@ -4,6 +4,9 @@
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --color-brand: #00e5ff;
+  --color-brand-dark: #00b8d4;
+  --color-brand-glow: rgba(0, 229, 255, 0.5);
 }
 
 @layer base {
