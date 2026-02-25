@@ -1,0 +1,5 @@
+{
+  "name": "AI Resume & ATS Analyzer",
+  "description": "Analyze resumes against job descriptions using Gemini AI to get ATS scores and actionable feedback.",
+  "requestFramePermissions": []
+}
