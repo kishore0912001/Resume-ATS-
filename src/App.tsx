@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   Upload, 
   FileText, 
@@ -13,7 +13,8 @@ import {
   Target,
   Zap,
   Tag,
-  Lightbulb
+  Lightbulb,
+  WifiOff
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { extractTextFromPDF } from './lib/pdf';
@@ -38,9 +39,26 @@ export default function App() {
   const [file, setFile] = useState<File | null>(null);
   const [jobDescription, setJobDescription] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [result, setResult] = useState<AnalysisResult | null>(() => {
+    const saved = localStorage.getItem('last_analysis');
+    return saved ? JSON.parse(saved) : null;
+  });
   const [error, setError] = useState<string | null>(null);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
@@ -88,6 +106,7 @@ export default function App() {
 
       const analysis = await analyzeResume(text, jobDescription);
       setResult(analysis);
+      localStorage.setItem('last_analysis', JSON.stringify(analysis));
     } catch (err: any) {
       console.error(err);
       setError(err.message || 'An error occurred during analysis. Please try again.');
@@ -234,10 +253,10 @@ ${result.actionable_improvements.map(i => `- ${i}`).join('\n')}
 
             <button
               onClick={handleAnalyze}
-              disabled={!file || isAnalyzing}
+              disabled={!file || isAnalyzing || !isOnline}
               className={cn(
                 "w-full py-4 rounded-xl font-bold text-slate-900 shadow-lg flex items-center justify-center gap-2 transition-all",
-                !file || isAnalyzing 
+                (!file || isAnalyzing || !isOnline)
                   ? "bg-slate-300 cursor-not-allowed" 
                   : "bg-brand hover:bg-brand-dark hover:-translate-y-0.5 active:translate-y-0 shadow-[0_0_15px_rgba(0,229,255,0.3)]"
               )}
@@ -247,6 +266,11 @@ ${result.actionable_improvements.map(i => `- ${i}`).join('\n')}
                   <Loader2 className="animate-spin" size={20} />
                   Analyzing Resume...
                 </>
+              ) : !isOnline ? (
+                <>
+                  <WifiOff size={20} />
+                  Offline - Analysis Unavailable
+                </>
               ) : (
                 <>
                   Analyze Resume
@@ -254,6 +278,13 @@ ${result.actionable_improvements.map(i => `- ${i}`).join('\n')}
                 </>
               )}
             </button>
+
+            {!isOnline && (
+              <div className="p-4 bg-amber-50 border border-amber-100 rounded-xl flex items-start gap-3 text-amber-700 text-sm">
+                <WifiOff size={18} className="shrink-0 mt-0.5" />
+                <p>You are currently offline. You can still view your last analysis result, but new analyses require an internet connection.</p>
+              </div>
+            )}
 
             {error && (
               <motion.div 
